@@ -14,12 +14,14 @@
 using namespace std;
 
 const int MAX_VERTICES = 4;
-const int CIRCLE_RADIUS = 3;
+const float CIRCLE_RADIUS = 3.0f;
 
 struct MyVector2
 {
     int x;
     int y;
+
+    bool isLocated;
 };
 
 struct Quadrilateral
@@ -30,6 +32,7 @@ struct Quadrilateral
 void UpdateMouse(vector<Quadrilateral>& quadrilaterals, Quadrilateral& tempQuadrilateral, int& vertexCounter);
 
 void DrawAllQuadrilaterals(vector<Quadrilateral> quadrilaterals);
+void DrawTempQuadrilateral(Quadrilateral tempQuadrilateral, int vertexCounter);
 
 int main()
 {
@@ -57,6 +60,7 @@ int main()
         ClearBackground(BLACK);
 
         DrawAllQuadrilaterals(quadrilaterals);
+        DrawTempQuadrilateral(tempQuadrilateral, vertexCounter);
 
         EndDrawing();
     }
@@ -72,6 +76,8 @@ void UpdateMouse(vector<Quadrilateral>& quadrilaterals, Quadrilateral& tempQuadr
     {
         tempQuadrilateral.vertices[vertexCounter].x = GetMouseX();
         tempQuadrilateral.vertices[vertexCounter].y = GetMouseY();
+        tempQuadrilateral.vertices[vertexCounter].isLocated = true;
+
         vertexCounter++;
 
         if (vertexCounter == MAX_VERTICES)
@@ -110,5 +116,41 @@ void DrawAllQuadrilaterals(vector<Quadrilateral> quadrilaterals)
 
             DrawCircle(posX, posY, static_cast<float>(CIRCLE_RADIUS), YELLOW);
         }
+    }
+}
+
+void DrawTempQuadrilateral(Quadrilateral tempQuadrilateral, int vertexCounter)
+{
+    int mousePosX = GetMouseX();
+    int mousePosY = GetMouseY();
+
+    DrawCircle(mousePosX, mousePosY, CIRCLE_RADIUS, WHITE);
+
+    if (vertexCounter == 0)
+    {
+        return;
+    }
+
+    for (int i = 0; i < vertexCounter - 1; i++)
+    {
+        int startPosX = tempQuadrilateral.vertices[i].x;
+        int startPosY = tempQuadrilateral.vertices[i].y;
+        int endPosX = tempQuadrilateral.vertices[i + 1].x;
+        int endPosY = tempQuadrilateral.vertices[i + 1].y;
+
+        DrawLine(startPosX, startPosY, endPosX, endPosY, DARKGRAY);
+    }
+
+    int lastPosX = tempQuadrilateral.vertices[vertexCounter - 1].x;
+    int lastPosY = tempQuadrilateral.vertices[vertexCounter - 1].y;
+
+    DrawLine(lastPosX, lastPosY, mousePosX, mousePosY, DARKGRAY);
+
+    for (int i = 0; i < vertexCounter; i++)
+    {
+        int posX = tempQuadrilateral.vertices[i].x;
+        int posY = tempQuadrilateral.vertices[i].y;
+
+        DrawCircle(posX, posY, CIRCLE_RADIUS, WHITE);
     }
 }
